@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .completed { text-decoration: line-through; }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Add a new task...">
+    <button id="addTaskBtn">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList');
+
+        // Load tasks from local storage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        tasks.forEach(task => addTaskToList(task));
+
+        function addTaskToList(task) {
+            const li = document.createElement('li');
+            li.textContent = task.text;
+            li.className = task.completed ? 'completed' : '';
+            li.addEventListener('click', () => {
+                task.completed = !task.completed;
+                li.classList.toggle('completed');
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            });
+            taskList.appendChild(li);
+        }
+
+        addTaskBtn.addEventListener('click', () => {
+            const taskText = taskInput.value;
+            if (taskText) {
+                const newTask = { text: taskText, completed: false };
+                tasks.push(newTask);
+                addTaskToList(newTask);
+                taskInput.value = '';
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+        });
+    </script>
+</body>
+</html>
