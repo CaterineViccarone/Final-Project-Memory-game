@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-template-rows: repeat(4, 100px);
+            gap: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #fafafa;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .flipped {
+            background-color: #84c1ff;
+        }
+        .matched {
+            background-color: #a0e0a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+        <div class="card">?</div>
+    </div>
+    <script>
+        const cards = document.querySelectorAll('.card');
+        let hasFlippedCard = false;
+        let firstCard, secondCard;
+
+        function flipCard() {
+            if (this === firstCard) return;
+            this.classList.add('flipped');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            const isMatch = firstCard.textContent === secondCard.textContent;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            resetBoard();
+        }
+
+        function unflipCards() {
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, firstCard, secondCard] = [false, null, null];
+        }
+
+        (function shuffle() {
+            cards.forEach(card => {
+                let ramdomPos = Math.floor(Math.random() * 16);
+                card.style.order = ramdomPos;
+            });
+        })();
+
+        cards.forEach(card => card.addEventListener('click', flipCard));
+    </script>
+</body>
+</html>
