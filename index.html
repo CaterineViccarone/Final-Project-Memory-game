@@ -1,23 +1,84 @@
-<div id="timer" style="font-size: 24px; margin-bottom: 20px;">Time: 00:00</div>
-<script>
-  let timerInterval;
-  let secondsElapsed = 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Card Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .card { width: 100px; height: 100px; background-color: #ddd; display: flex; align-items: center; justify-content: center; font-size: 2em; }
+        .hidden { background-color: #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Memory Card Game</h1>
+    <div id="grid" class="grid"></div>
+    <div>
+        <p>Moves: <span id="move-counter">0</span></p>
+        <p>Matches: <span id="match-counter">0</span></p>
+        <p id="win-message" style="display: none;">You Win!</p>
+    </div>
 
-  function startTimer() {
-      secondsElapsed = 0;
-      document.getElementById("timer").innerText = "Time: 00:00";
-      timerInterval = setInterval(() => {
-          secondsElapsed++;
-          const minutes = Math.floor(secondsElapsed / 60);
-          const seconds = secondsElapsed % 60;
-          document.getElementById("timer").innerText = `Time: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      }, 1000);
-  }
+    <script>
+        const cardEmojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😜", "😝", "😛", "🤪", "😎", "😍", "😘", "😗"];
+        const cards = [...cardEmojis.slice(0, 8), ...cardEmojis.slice(0, 8)];
+        cards.sort(() => Math.random() - 0.5);
 
-  function stopTimer() {
-      clearInterval(timerInterval);
-  }
+        let firstCard = null;
+        let secondCard = null;
+        let moveCounter = 0;
+        let matchCounter = 0;
 
-  // Call startTimer() when the first card is flipped
-  // Stop the timer when all pairs are matched
-</script>
+        const grid = document.getElementById('grid');
+        const moveCounterDisplay = document.getElementById('move-counter');
+        const matchCounterDisplay = document.getElementById('match-counter');
+        const winMessage = document.getElementById('win-message');
+
+        cards.forEach((emoji, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card', 'hidden');
+            card.dataset.emoji = emoji;
+            card.addEventListener('click', () => flipCard(card));
+            grid.appendChild(card);
+        });
+
+        function flipCard(card) {
+            if (card.classList.contains('hidden') && !secondCard) {
+                card.classList.remove('hidden');
+                card.innerHTML = card.dataset.emoji;
+                if (!firstCard) {
+                    firstCard = card;
+                } else {
+                    secondCard = card;
+                    moveCounter++; // increment move counter
+                    moveCounterDisplay.innerHTML = moveCounter;
+                    checkForMatch();
+                }
+            }
+        }
+
+        function checkForMatch() {
+            if (firstCard.dataset.emoji === secondCard.dataset.emoji) {
+                matchCounter++;
+                matchCounterDisplay.innerHTML = matchCounter;
+                resetCards();
+                if (matchCounter === 8) {
+                    winMessage.style.display = 'block';
+                }
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.add('hidden');
+                    secondCard.classList.add('hidden');
+                    resetCards();
+                }, 1000);
+            }
+        }
+
+        function resetCards() {
+            firstCard = null;
+            secondCard = null;
+        }
+    </script>
+</body>
+</html>
